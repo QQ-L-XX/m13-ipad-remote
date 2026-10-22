@@ -1,0 +1,27 @@
+# Local builds, signing material, device configuration and private recovery bundles
+.build/
+dist/
+.local/
+.venv/
+__pycache__/
+*.pyc
+*.apk
+*.aab
+*.idsig
+*.jks
+*.keystore
+*.pk8
+*.pem
+*.p12
+*.pfx
+*.zip
+*.log
+.env
+.env.*
+!.env.example
+local.properties
+private-*.json
+*Recovery*/
+recovery*/
+.playwright*/
+node_modules/

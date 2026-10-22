@@ -1,0 +1,18 @@
+{
+  "version": "0.8-ui2",
+  "package": "local.m13.ipadremote",
+  "web_ui": "0.8 · UI2",
+  "tested_android_api": 22,
+  "tested_client": "iPad mini 1 A1432, iOS 9.3.5",
+  "daily_computer_required": false,
+  "other_app_system_audio": false,
+  "sixty_fps_achieved": false,
+  "synchronization_requires_custom_player": true,
+  "persistent_login_app_server_restart_verified": true,
+  "persistent_login_desktop_browser_reopen_verified": true,
+  "ui2_ipad_login_acceptance_pending": true,
+  "ui2_full_box_cold_boot_retested": false,
+  "private_device_backup_included": false,
+  "apk_sha256": "00791d435e0554e8c3b0e097d189093ae9e5199f56f43f8bee8e1c04900b04c0",
+  "portable_build_runtime_dex_matches_release": true
+}
