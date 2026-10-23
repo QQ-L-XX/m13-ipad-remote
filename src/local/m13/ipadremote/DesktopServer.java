@@ -27,6 +27,7 @@ public class DesktopServer {
  static volatile String captureError="",inputError="";
  static final long started=SystemClock.elapsedRealtime();
  static String password,session;
+ static final String runtimeId=UUID.randomUUID().toString();
  static int physicalWidth=1920,physicalHeight=1080,failures;
  static final class Profile {final String id;final int width,height,quality,interval;Profile(String i,int w,int h,int q,int t){id=i;width=w;height=h;quality=q;interval=t;}}
  static final Profile CLEAR=new Profile("clear",1280,720,85,250),ORIGINAL=new Profile("original",1920,1080,90,600),SMOOTH=new Profile("smooth",960,540,70,160);
@@ -74,7 +75,7 @@ public class DesktopServer {
   InputStream in=new BufferedInputStream(s.getInputStream());String[]start=line(in).split(" ");if(start.length!=3)return;String[] target=start[1].split("\\?",2);String method=start[0],path=target[0];Map<String,String> query=form(target.length>1?target[1]:"");Map<String,String> h=new HashMap<String,String>();int count=0;while(true){String l=line(in);if(l.length()==0)break;if(++count>40)throw new IOException("Too many headers");int c=l.indexOf(':');if(c>0)h.put(l.substring(0,c).toLowerCase(Locale.US),l.substring(c+1).trim());}
   String host=h.get("host"),origin=h.get("origin");if(host==null||!host.equals(s.getLocalAddress().getHostAddress()+":"+PORT)||(origin!=null&&!origin.equals("http://"+host))){text(s,403,"{\"error\":\"请求来源不匹配\"}");return;}
   if(!method.equals("GET")&&!method.equals("POST")){text(s,400,"{}");return;}int n=Integer.parseInt(h.containsKey("content-length")?h.get("content-length"):"0");if(n<0||n>2048)throw new IOException("Body limit");byte[]body=new byte[n];int off=0;while(off<n){int k=in.read(body,off,n-off);if(k<0)throw new EOFException();off+=k;}
-  if(path.equals("/health")){JSONObject o=new JSONObject();o.put("ok",true);o.put("service","m13-ipad-remote");o.put("version","0.8");o.put("rememberLogin",true);o.put("authVersion",1);o.put("uid",android.os.Process.myUid());o.put("bootId",bootId);o.put("deviceUptimeSeconds",SystemClock.elapsedRealtime()/1000);text(s,200,o.toString());return;}
+  if(path.equals("/health")){JSONObject o=new JSONObject();o.put("ok",true);o.put("service","m13-ipad-remote");o.put("version","0.8");o.put("rememberLogin",true);o.put("authVersion",1);o.put("recoveryVersion",1);o.put("runtimeId",runtimeId);o.put("uid",android.os.Process.myUid());o.put("bootId",bootId);o.put("deviceUptimeSeconds",SystemClock.elapsedRealtime()/1000);text(s,200,o.toString());return;}
   if(path.equals("/shutdown")&&method.equals("POST")&&s.getInetAddress().isLoopbackAddress()&&MessageDigest.isEqual(password.getBytes("UTF-8"),body)){text(s,200,"{\"ok\":true}");new Thread(new Runnable(){public void run(){SystemClock.sleep(300);System.exit(0);}}).start();return;}
   if(path.equals("/")){send(s,200,"text/html; charset=utf-8",readAsset("panel.html"),"Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'\r\n");return;}
   if(path.equals("/sync.js")){send(s,200,"application/javascript; charset=utf-8",readAsset("sync.js"),null);return;}

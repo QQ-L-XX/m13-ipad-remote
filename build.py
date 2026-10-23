@@ -36,7 +36,10 @@ def main():
     sign.add_argument("--unsigned", action="store_true", help="Produce an aligned unsigned APK")
     sign.add_argument("--keystore", type=Path, help="Sign with this private keystore; create it if missing")
     parser.add_argument("--key-alias", default="remote")
+    parser.add_argument("--keeper", action="store_true", help="Build the independent recovery companion instead of the panel")
     args = parser.parse_args()
+    module = ROOT / "keeper" if args.keeper else ROOT
+    stem = "M13-iPad-Keeper-0.1" if args.keeper else "M13-iPad-Remote-0.8-ui3"
     sdk = Path(args.sdk) if args.sdk else None
     android = args.android_jar or (sdk / "platforms" / args.platform / "android.jar" if sdk else None)
     if android is None or not android.is_file():
@@ -67,12 +70,12 @@ def main():
         for folder in (classes, dex, res):
             folder.mkdir()
         run([javac, "-encoding", "UTF-8", "-source", "8", "-target", "8", "-bootclasspath", android,
-             "-d", classes, *sorted(ROOT.joinpath("src").rglob("*.java"))])
+             "-d", classes, *sorted(module.joinpath("src").rglob("*.java"))])
         run([java, "-cp", tools / "lib/d8.jar", "com.android.tools.r8.D8", "--min-api", "21",
              "--lib", android, "--output", dex, *sorted(classes.rglob("*.class"))])
         unsigned, aligned = work / "unsigned.apk", work / "aligned.apk"
-        run([aapt, "package", "-f", "-M", ROOT / "AndroidManifest.xml", "-S", res, "-A", ROOT / "assets",
-             "-I", android, "-F", unsigned])
+        run([aapt, "package", "-f", "-M", module / "AndroidManifest.xml", "-S", res,
+             "-I", android, "-F", unsigned] + (["-A", module / "assets"] if (module / "assets").is_dir() else []))
         run([aapt, "add", unsigned, "classes.dex"], cwd=dex)
         run([zipalign, "-f", "4", unsigned, aligned])
         if args.keystore:
@@ -83,17 +86,19 @@ def main():
                      "-storetype", "JKS", "-alias", args.key_alias, "-storepass:env", "M13_KEYSTORE_PASSWORD",
                      "-keypass:env", "M13_KEYSTORE_PASSWORD", "-keyalg", "RSA", "-keysize", "2048",
                      "-validity", "3650", "-dname", "CN=M13 iPad Remote Local Build"])
-            output = dist / "M13-iPad-Remote-0.8-ui2.apk"
+            output = dist / (stem + ".apk")
             run([java, "-jar", tools / "lib/apksigner.jar", "sign", "--ks", key, "--ks-key-alias", args.key_alias,
                  "--ks-pass", "env:M13_KEYSTORE_PASSWORD", "--key-pass", "env:M13_KEYSTORE_PASSWORD",
                  "--min-sdk-version", "21", "--out", output, aligned])
             run([java, "-jar", tools / "lib/apksigner.jar", "verify", "--verbose", output])
         else:
-            output = dist / "M13-iPad-Remote-0.8-ui2-unsigned.apk"
+            output = dist / (stem + "-unsigned.apk")
             shutil.copy2(aligned, output)
         with zipfile.ZipFile(output) as archive:
             assert archive.testzip() is None
-            assert {"classes.dex", "assets/panel.html", "assets/sync.js"}.issubset(archive.namelist())
+            assert "classes.dex" in archive.namelist()
+            if not args.keeper:
+                assert {"assets/panel.html", "assets/sync.js"}.issubset(archive.namelist())
     print(f"Built {output.relative_to(ROOT)} ({output.stat().st_size} bytes)")
 
 

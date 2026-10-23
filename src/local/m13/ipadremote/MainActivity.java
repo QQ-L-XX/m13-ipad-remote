@@ -13,11 +13,11 @@ public class MainActivity extends Activity {
   if(password==null){String initial=getIntent().getStringExtra("initial_password");password=initial!=null&&initial.matches("[A-Za-z0-9-]{8,40}")?initial:"M13-"+UUID.randomUUID().toString().replace("-","").substring(0,8);p.edit().putString("password",password).apply();}
   getIntent().removeExtra("initial_password");
   LinearLayout box=new LinearLayout(this);box.setOrientation(1);box.setPadding(60,35,60,20);box.setBackgroundColor(0xff17283c);setContentView(box);
-  label(box,"iPad 桌面连接 · 试用版 0.2",30);label(box,"iPad 连接同一个 Wi-Fi，用 Safari 打开：",20);label(box,address(),30);label(box,"连接密码："+password,26);
-  label(box,"首次连接若弹出调试授权：勾选“始终允许”，再选择允许。\n只显示桌面与回传操作，暂不提供声音和视频播放。",19);status=label(box,"正在检查服务…",19);
-  Button start=new Button(this);start.setText("启动／重试连接");box.addView(start);start.setOnClickListener(new View.OnClickListener(){public void onClick(View v){p.edit().putBoolean("enabled",true).apply();startService(new Intent(MainActivity.this,BridgeService.class));}});
-  Button stop=new Button(this);stop.setText("停止桌面服务");box.addView(stop);stop.setOnClickListener(new View.OnClickListener(){public void onClick(View v){p.edit().putBoolean("enabled",false).apply();stopService(new Intent(MainActivity.this,BridgeService.class));new Thread(new Runnable(){public void run(){try{BridgeService.local("POST","/shutdown",password);}catch(Exception ignored){}BridgeService.state="已停止";}}).start();}});
-  p.edit().putBoolean("enabled",true).apply();startService(new Intent(this,BridgeService.class));handler.post(tick);
+  label(box,"iPad 桌面连接 · 0.8 UI3",30);label(box,"iPad 连接同一个 Wi-Fi，用 Safari 打开：",20);label(box,address(),30);label(box,"连接密码："+password,26);
+  label(box,"首次连接若弹出调试授权：勾选“始终允许”，再选择允许。\n支持桌面操作与适配影片播放；可搭配独立守护自动恢复。",19);status=label(box,"正在检查服务…",19);
+  Button start=new Button(this);start.setText("启动／重试连接");box.addView(start);start.setOnClickListener(new View.OnClickListener(){public void onClick(View v){p.edit().putBoolean("enabled",true).apply();KeeperControl.enabled(MainActivity.this,true);startService(new Intent(MainActivity.this,BridgeService.class));}});
+  Button stop=new Button(this);stop.setText("停止桌面服务");box.addView(stop);stop.setOnClickListener(new View.OnClickListener(){public void onClick(View v){p.edit().putBoolean("enabled",false).apply();KeeperControl.enabled(MainActivity.this,false);stopService(new Intent(MainActivity.this,BridgeService.class));new Thread(new Runnable(){public void run(){try{BridgeService.local("POST","/shutdown",password);}catch(Exception ignored){}BridgeService.state="已停止";}}).start();}});
+  p.edit().putBoolean("enabled",true).apply();KeeperControl.enabled(MainActivity.this,true);startService(new Intent(this,BridgeService.class));handler.post(tick);
  }
  Runnable tick=new Runnable(){public void run(){status.setText(BridgeService.state);handler.postDelayed(this,1500);}};
  public void onDestroy(){handler.removeCallbacks(tick);super.onDestroy();}

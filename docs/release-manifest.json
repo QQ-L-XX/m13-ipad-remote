@@ -1,7 +1,7 @@
 {
-  "version": "0.8-ui2",
+  "version": "0.8-ui3",
   "package": "local.m13.ipadremote",
-  "web_ui": "0.8 · UI2",
+  "web_ui": "0.8 · UI3",
   "tested_android_api": 22,
   "tested_client": "iPad mini 1 A1432, iOS 9.3.5",
   "daily_computer_required": false,
@@ -13,6 +13,12 @@
   "ui2_ipad_login_acceptance_pending": true,
   "ui2_full_box_cold_boot_retested": false,
   "private_device_backup_included": false,
-  "apk_sha256": "00791d435e0554e8c3b0e097d189093ae9e5199f56f43f8bee8e1c04900b04c0",
-  "portable_build_runtime_dex_matches_release": true
+  "apk_sha256": "1e0d7636d15a4570e5c68390a613ad8a15e534d75e181899adb8f158157f2768",
+  "portable_build_runtime_dex_matches_release": true,
+  "automatic_recovery_companion": "local.m13.ipadkeeper / 0.1",
+  "same_certificate_required": true,
+  "single_panel_force_stop_recovery_verified": true,
+  "package_update_new_runtime_verified": true,
+  "full_box_cold_boot_verified": true,
+  "keeper_contains_household_credentials": false
 }

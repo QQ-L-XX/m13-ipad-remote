@@ -1,0 +1,39 @@
+{
+  "version": "0.8-ui3",
+  "date": "2026-10-23",
+  "target": "MagicBox M13 / Android API 22",
+  "tests": [
+    {
+      "case": "panel_force_stop_and_daemon_loss",
+      "recovered_seconds": 10.23,
+      "old_cookie_accepted": true
+    },
+    {
+      "case": "panel_package_update",
+      "recovered_seconds": 1.69,
+      "old_cookie_accepted": true,
+      "new_runtime_observed": true
+    }
+  ],
+  "signature_guard_rejects_shell": true,
+  "desktop_frame_after_faults": true,
+  "old_login_preserved": true,
+  "auth_policy_regression_checks": 13,
+  "cold_boot_verified": true,
+  "cold_boot_pending": false,
+  "cold_boot_recovery_seconds": null,
+  "cold_boot_old_cookie_accepted": true,
+  "ipad_real_ui3_acceptance_pending": true,
+  "both_apps_force_stop_recovery_guaranteed": false,
+  "system_policy_or_network_failure_guaranteed": false,
+  "apks": {
+    "M13-iPad-Remote-0.8-ui3.apk": {
+      "sha256": "1e0d7636d15a4570e5c68390a613ad8a15e534d75e181899adb8f158157f2768",
+      "bytes": 49614
+    },
+    "M13-iPad-Keeper-0.1.apk": {
+      "sha256": "dfa6db891e52656d205e804cd46bcd368ff3963129f83c272cbdd4e3c93f6175",
+      "bytes": 16723
+    }
+  }
+}
